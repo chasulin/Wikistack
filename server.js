@@ -1,10 +1,19 @@
 // const http = require('http');
 const app = require('./app');
+const { db, Page, User } = require('./models');
 // const server = http.createServer(app);
 
 const PORT = 3000;
 
-const startServer = () => {
+async function auth() {
+  await db.authenticate();
+  console.log('connected to db!');
+}
+auth();
+
+const startServer = async () => {
+  await User.sync({ force: true });
+  await Page.sync({ force: true });
   app.listen(PORT, () => {
     console.log('server listening in port');
   });
