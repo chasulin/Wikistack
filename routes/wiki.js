@@ -59,17 +59,19 @@ router.get('/:slug', async (req, res, next) => {
 });
 
 // CONFUSED ::
-router.post("/:slug", async (req, res, next) => {
+router.post('/:slug', async (req, res, next) => {
   try {
     const [updatedRowCount, updatedPages] = await Page.update(req.body, {
       where: {
-        slug: req.params.slug
+        slug: req.params.slug,
       },
-      returning: true
+      returning: true,
     });
 
-    res.redirect("/wiki/" + updatedPages[0].slug);
-  } catch (error) { next(error) }
+    res.redirect('/wiki/' + updatedPages[0].slug);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/', async (req, res, next) => {
@@ -89,6 +91,15 @@ router.post('/', async (req, res, next) => {
     // res.sendStatus(201);
   } catch (error) {
     next(error);
+  }
+});
+
+router.get('/:slug/delete', async (req, res, next) => {
+  try {
+    await Page.destroy({ where: { slug: req.params.slug } });
+    res.redirect('/wiki');
+  } catch (err) {
+    next(err);
   }
 });
 
