@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost:5432/wikistack', {
   logging: false,
 });
+
 // async function auth() {
 //   await db.authenticate();
 //   console.log('connected to db!');
@@ -16,6 +17,8 @@ const Page = db.define('page', {
   slug: {
     type: Sequelize.STRING,
     allowNull: false,
+    //since we are searching, editing, deleting by slug, these need to be unique
+    unique: true,
   },
   content: {
     type: Sequelize.TEXT,
@@ -26,6 +29,18 @@ const Page = db.define('page', {
   },
 });
 
+Page.beforeValidate(page => {
+  /*
+   * Generate slug
+   */
+  if (!page.slug) {
+    page.slug = page.title
+      .replace(/\s/g, '_')
+      .replace(/\W/g, '')
+      .toLowerCase();
+  }
+});
+
 const User = db.define('user', {
   name: {
     type: Sequelize.STRING,
@@ -34,8 +49,11 @@ const User = db.define('user', {
   email: {
     type: Sequelize.STRING,
     isEmail: true,
+    allowNull: false,
   },
 });
+
+Page.belongsTo(User, { as: 'author' });
 
 module.exports = {
   db,

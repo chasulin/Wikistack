@@ -12,8 +12,8 @@ async function auth() {
 auth();
 
 const startServer = async () => {
-  await User.sync({ force: true });
-  await Page.sync({ force: true });
+  await User.sync();
+  await Page.sync();
   app.listen(PORT, () => {
     console.log('server listening in port');
   });
